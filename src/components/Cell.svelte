@@ -1,23 +1,18 @@
-<script type="text/javascript" lang="ts">
- export let content: string = '';
- export let state: string;
- export let callback;
+<script lang="ts">
+ import type { Cell } from './Cell';
+ import { CellState } from './Cell';
 
- let value = content;
- function updateCell(newValue): void {
-     content = newValue;
-     state = "idle";
-     callback();
- }
+ export let data: Cell;
+ export let callback: (c: Cell) => void;
 
 </script>
 
 <div class="cell">
-    {#if (state == 'edit')}
-        <input autofocus on:blur={updateCell(value)} bind:value={value}/>
-    {:else if (state == 'idle')}
-        <div on:click="{() => state = "edit"}">
-        {content}
+    {#if (data.state == 'edit')}
+        <input autofocus on:blur={callback(data)} bind:value={data.function}/>
+    {:else if (data.state == 'idle')}
+        <div class="value" on:dblclick="{() => data.state = CellState.Edit}">
+        {data.value}
         </div>
     {/if}
 </div>
@@ -33,5 +28,10 @@
  }
  input {
      max-width: 5em;
+ }
+
+ .value {
+     width: 100%;
+     height: 100%;
  }
 </style>

@@ -1,5 +1,7 @@
-<script type="text/javascript" lang="ts">
-	import Cell from '../components/Cell.svelte';
+<script lang="ts">
+	import CellComponent from '../components/Cell.svelte';
+	import type { Cell } from '../components/Cell';
+	import { emptyCell, CellState } from '../components/Cell';
 
 	type Row = number;
 	type Column = string;
@@ -12,30 +14,36 @@
 	type State = {
 		rows: Row[];
 		columns: Column[];
-		Cells: Map<Position, Cell>;
+		cells: Map<Position, Cell>;
 	};
-
-  type Cell = {
-    value: number;
-    function: string;
-    state: CellState;
-  }
-
-  enum CellState {'idle','edit'}
 
 	//initiate state
 	let state: State = {
 		rows: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
 		columns: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'],
-		Cells: new Map()
+		cells: new Map()
 	};
 
-  function evaluate(position: Position): number  {
-    console.log(position)
-    return 1
-  }
+	function updateCell(position: Position, newState: Cell): void {
+	  newState.state = CellState.Idle;
+	  newState = evaluate(newState);
+	  state.cells.set(position, newState);
+	  state = state;
+	}
 
-  
+	function evaluate(c: Cell): Cell {
+	  if (c.function[0] == '=')
+		c.value = eval(c.function.substring(1))
+	  else
+		c.value = c.function
+	  return c
+	}
+
+  // 	type expression =
+  // | number
+  // 	| 
+
+
 
 </script>
 
@@ -51,7 +59,10 @@
 			<th>{row}</th>
 			{#each state.columns as column}
 				<td>
-					<Cell content="." state="idle" callback={() => evaluate({row, column})} />
+					<CellComponent
+						data={{...emptyCell}}
+						callback={(newState) => updateCell({ row, column }, newState)}
+					/>
 				</td>
 			{/each}
 		</tr>
