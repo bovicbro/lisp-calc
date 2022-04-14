@@ -25,27 +25,40 @@
 	};
 
 	function updateCell(position: Position, newState: Cell): void {
-	  newState.state = CellState.Idle;
-	  newState = evaluate(newState);
-	  state.cells.set(position, newState);
-	  state = state;
+		newState.state = CellState.Idle;
+		newState = evaluate(newState);
+		state.cells.set(position, newState);
+		state = state;
 	}
 
 	function evaluate(c: Cell): Cell {
-	  if (c.function[0] == '=')
-		c.value = eval(c.function.substring(1))
-	  else
-		c.value = c.function
-	  return c
+		if (c.function[0] == '=') c.value = eval(c.function.substring(1));
+		else c.value = c.function;
+		return c;
 	}
 
-  // 	type expression =
-  // | number
-  // 	| 
+	// Tokens - my building blocks.
+	type Token = Number | Add | Subtract;
+	type Number = { type: 'number'; val: number };
+	const number = (v: number) => ({type: 'number', val: v} as Number) 
+	type Add = { type: 'add';};
+	const add = () => ({type: 'add'} as Add) 
+	type Subtract = { type: 'subtract';};
 
+	// Scanning / tokenizing
+	// Split the string into datatypes
+	const tokenize = (stream: string): Token[] => {
+		let parsedTokens: Token[];
+		return parsedTokens;
+	};
 
+	// const tokenMap = new Map<RegExp, () => Token >([
+	// 	[new RegExp('+'), add],
+	// 	[new RegExp('/d'), number]
+	// ])
 
 </script>
+
 
 <table>
 	<tr>
@@ -60,7 +73,7 @@
 			{#each state.columns as column}
 				<td>
 					<CellComponent
-						data={{...emptyCell}}
+						data={{ ...emptyCell }}
 						callback={(newState) => updateCell({ row, column }, newState)}
 					/>
 				</td>
