@@ -2,6 +2,7 @@
 	import CellComponent from '../components/Cell.svelte';
 	import type { Cell } from '../components/Cell';
 	import { emptyCell, CellState } from '../components/Cell';
+	import interpreteSource from './interpreter'
 
 	type Row = number;
 	type Column = string;
@@ -19,8 +20,8 @@
 
 	//initiate state
 	let state: State = {
-		rows: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-		columns: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'],
+		rows: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+		columns: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O'],
 		cells: new Map()
 	};
 
@@ -32,33 +33,11 @@
 	}
 
 	function evaluate(c: Cell): Cell {
-		if (c.function[0] == '=') c.value = eval(c.function.substring(1));
+		if (c.function[0] == '=') c.value = interpreteSource(c.function.slice(1));
 		else c.value = c.function;
 		return c;
 	}
-
-	// Tokens - my building blocks.
-	type Token = Number | Add | Subtract;
-	type Number = { type: 'number'; val: number };
-	const number = (v: number) => ({type: 'number', val: v} as Number) 
-	type Add = { type: 'add';};
-	const add = () => ({type: 'add'} as Add) 
-	type Subtract = { type: 'subtract';};
-
-	// Scanning / tokenizing
-	// Split the string into datatypes
-	const tokenize = (stream: string): Token[] => {
-		let parsedTokens: Token[];
-		return parsedTokens;
-	};
-
-	// const tokenMap = new Map<RegExp, () => Token >([
-	// 	[new RegExp('+'), add],
-	// 	[new RegExp('/d'), number]
-	// ])
-
 </script>
-
 
 <table>
 	<tr>
