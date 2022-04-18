@@ -29,8 +29,9 @@ const newToken = (tokenType: tokenType, lexeme: string, value: number, line: num
 }
 
 const scanToken = (source: string, location: number, line: number): Token => {
-    // if (source[location].match(/d/))
-    //     return newToken(tokenType.NUMBER, source[location], parseInt(source[location]),line)
+    if (/\d/.test(source[location])) {
+        return newToken(tokenType.NUMBER, source[location], parseInt(source[location]),line)
+    }
 
     switch (source[location]) {
         case '+':
