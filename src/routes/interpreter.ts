@@ -8,6 +8,8 @@ type Token = {
 enum tokenType {
     // Single charachters
     PLUS = '+',
+    MINUS = '-',
+    MULTIPLY = '*',
     LEFT_PARAN = '(',
     RIGHT_PARAN = ')',
     // Literals
@@ -36,12 +38,10 @@ const scanToken = (source: string, location: number, line: number): Token => {
     switch (source[location]) {
         case '+':
             return newToken(tokenType.PLUS, '+', 0, line)
-        case '1':
-            return newToken(tokenType.NUMBER, '1', 1, line)
-        case '2':
-            return newToken(tokenType.NUMBER, '1', 2, line)
-        case '3':
-            return newToken(tokenType.NUMBER, '1', 3, line)
+        case '-':
+            return newToken(tokenType.MINUS, '-', 0, line)
+        case '*':
+            return newToken(tokenType.MULTIPLY, '*', 0, line)
         case '(':
             return newToken(tokenType.LEFT_PARAN, '(', 0, line)
         case ')':
@@ -108,7 +108,14 @@ const evaluateAST = (expr: Expr): number => {
     if (isNumber(expr)) {
         return expr.value
     } else {
-        return evaluateAST(expr.left) + evaluateAST(expr.right)
+        switch(expr.operator.tokenType) {
+            case (tokenType.PLUS):
+                return evaluateAST(expr.left) + evaluateAST(expr.right)
+            case (tokenType.MINUS):
+                return evaluateAST(expr.left) - evaluateAST(expr.right)
+            case (tokenType.MULTIPLY):
+                return evaluateAST(expr.left) * evaluateAST(expr.right)
+        }
     }
 }
 

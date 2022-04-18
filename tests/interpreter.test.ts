@@ -17,6 +17,9 @@ test('Interprete statement (+(+(+ 1 1)1)1)', () => {
     expect(interpreteSource("(+(+(+ 1 1)1)1)")).toBe(4)
 })
 
+test('Interprete statement (+(*(- 1 1)1)1)', () => {
+    expect(interpreteSource("(+(*(- 1 1)1)1)")).toBe(1)
+})
 // test('Test for all ints', () => {
 //     expect(interpreteSource("(+(+(+ 43 1)1)1)")).toBe(46)
 // })
