@@ -31,8 +31,11 @@ const newToken = (tokenType: tokenType, lexeme: string, value: number, line: num
 }
 
 const scanToken = (source: string, location: number, line: number): Token => {
-    if (/\d/.test(source[location])) {
-        return newToken(tokenType.NUMBER, source[location], parseInt(source[location]),line)
+
+    const numberRegExp = new RegExp(/^\d+/)
+    if (numberRegExp.test(source[location])) {
+        const value: number = parseInt(numberRegExp.exec(source.slice(location))[0]);
+        return newToken(tokenType.NUMBER, value.toString(),value,line)
     }
 
     switch (source[location]) {
@@ -46,21 +49,20 @@ const scanToken = (source: string, location: number, line: number): Token => {
             return newToken(tokenType.LEFT_PARAN, '(', 0, line)
         case ')':
             return newToken(tokenType.RIGHT_PARAN, ')', 0, line)
-        case '':
-            return newToken(tokenType.SPACE, ' ', 0, line)
     }
     return newToken(tokenType.NULL, '', 0, line)
 }
 
 export const scanTokens = (source: string): Token[] => {
-    let startOfLexeme = 0;
     const tokens: Token[] = [];
     const line = 1;
 
     for (let current = 0; current < source.length; current++) {
         const token: Token = scanToken(source, current, line)
-        if (token.tokenType != tokenType.NULL)
+        if (token.tokenType != tokenType.NULL) {
             tokens.push(token)
+            current += token.lexeme.length -1
+        }
     }
     return tokens
 }

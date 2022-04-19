@@ -2,7 +2,7 @@
 	import CellComponent from '../components/Cell.svelte';
 	import type { Cell } from '../components/Cell';
 	import { emptyCell, CellState } from '../components/Cell';
-	import interpreteSource from './interpreter'
+	import interpreteSource from '$lib/interpreter'
 
 	type Row = number;
 	type Column = string;
