@@ -2,7 +2,7 @@
 	import CellComponent from '../components/Cell.svelte';
 	import type { Cell } from '../components/Cell';
 	import { emptyCell, CellState } from '../components/Cell';
-	import interpreteSource from '$lib/interpreter'
+	import { evaluateSource } from '$lib/interpreter/';
 
 	type Row = number;
 	type Column = string;
@@ -10,6 +10,10 @@
 	type Position = {
 		row: Row;
 		column: Column;
+	};
+
+	const newPosition = (row: Row, column: Column): Position => {
+		return { row: row, column: column };
 	};
 
 	type State = {
@@ -33,10 +37,32 @@
 	}
 
 	function evaluate(c: Cell): Cell {
-		if (c.function[0] == '=') c.value = interpreteSource(c.function.slice(1));
+		if( typeof c.function == 'undefined' ) return emptyCell
+		if (c.function[0] == '=') c.value = evaluateSource(c.function.slice(1), getCellValue);
 		else c.value = c.function;
 		return c;
 	}
+
+	const getCellValue = (p: Position): number => {
+		return getCellFromPosition(state.cells, p).value
+	};
+
+	const stringToPosition = (s: string): Position => {
+		const row = parseInt(/\d+/.exec(s)[0]) as Row;
+		const column = /([A-Z])+/.exec(s)[0] as Column;
+		return newPosition(row, column);
+	};
+
+ const getCellFromPosition = (map: Map<Position,Cell>, position: Position): Cell => {
+	 let returnValue: Cell;
+	 map.forEach( (value, key) => {
+		 if (key.row == position.row && key.column == position.column) {
+			 returnValue = value
+		 }
+	 })
+	 return returnValue
+ }
+
 </script>
 
 <table>
@@ -60,6 +86,11 @@
 		</tr>
 	{/each}
 </table>
+<button
+	on:click={() => {
+		console.log(getCellValue(stringToPosition('A1')));
+	}}>BFB</button
+>
 
 <style type="text/css" media="screen">
 	td {

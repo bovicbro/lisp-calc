@@ -1,6 +1,6 @@
 export type Cell = {
-    value: number | string;
-    function: string;
+    value?: number;
+    function?: string;
     state: CellState;
 }
 
@@ -10,7 +10,5 @@ export enum CellState {
 }
 
 export const emptyCell = {
-    value: '',
-    function: '',
     state: CellState.Idle
 }

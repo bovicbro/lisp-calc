@@ -12,7 +12,11 @@
         <input autofocus on:blur={callback(data)} bind:value={data.function}/>
     {:else if (data.state == 'idle')}
         <div class="value" on:dblclick="{() => data.state = CellState.Edit}">
-        {data.value}
+            {#if (data.value)}
+                {data.value}
+            {:else if (data.function)}
+                {data.function}
+            {/if}
         </div>
     {/if}
 </div>
