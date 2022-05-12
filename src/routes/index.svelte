@@ -37,14 +37,21 @@
 	}
 
 	function evaluate(c: Cell): Cell {
-		if( typeof c.function == 'undefined' ) return emptyCell
-		if (c.function[0] == '=') c.value = evaluateSource(c.function.slice(1), getCellValue);
+		if (typeof c.function == 'undefined') return emptyCell;
+		if (c.function[0] == '=') c.value = evaluateSource(c.function.slice(1), getCellCallback(state));
 		else c.value = c.function;
 		return c;
 	}
 
-	const getCellValue = (p: Position): number => {
-		return getCellFromPosition(state.cells, p).value
+	const getCellValue = (position: string, state: State): number => {
+		let returnValue: Cell;
+		const p: Position = stringToPosition(position);
+		state.cells.forEach((value, key) => {
+			if (key.row == p.row && key.column == p.column) {
+				returnValue = value;
+			}
+		});
+		return returnValue.value;
 	};
 
 	const stringToPosition = (s: string): Position => {
@@ -53,15 +60,11 @@
 		return newPosition(row, column);
 	};
 
- const getCellFromPosition = (map: Map<Position,Cell>, position: Position): Cell => {
-	 let returnValue: Cell;
-	 map.forEach( (value, key) => {
-		 if (key.row == position.row && key.column == position.column) {
-			 returnValue = value
-		 }
-	 })
-	 return returnValue
- }
+	const getCellCallback = (s: State): ((arg0: string) => number) => {
+		return (arg0: string): number => {
+			return getCellValue(arg0, s)
+		};
+	};
 
 </script>
 
@@ -86,11 +89,6 @@
 		</tr>
 	{/each}
 </table>
-<button
-	on:click={() => {
-		console.log(getCellValue(stringToPosition('A1')));
-	}}>BFB</button
->
 
 <style type="text/css" media="screen">
 	td {
