@@ -24,24 +24,33 @@
 
 	//initiate state
 	let state: State = {
-		rows: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
-		columns: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O'],
+		rows: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26],
+		columns: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O','P','Q','R','S','T'],
 		cells: new Map()
 	};
 
-	function updateCell(position: Position, newState: Cell): void {
+	const updateCells = () => {
+		state.cells.forEach((cell, position) => {
+			updateCell(position, cell);
+			console.log(cell);
+		});
+		state = state;
+		console.log('updating all cells');
+	};
+
+	const updateCell = (position: Position, newState: Cell): void => {
 		newState.state = CellState.Idle;
 		newState = evaluate(newState);
 		state.cells.set(position, newState);
 		state = state;
-	}
+	};
 
-	function evaluate(c: Cell): Cell {
+	const evaluate = (c: Cell): Cell => {
 		if (typeof c.function == 'undefined') return emptyCell;
 		if (c.function[0] == '=') c.value = evaluateSource(c.function.slice(1), getCellCallback(state));
 		else c.value = c.function;
 		return c;
-	}
+	};
 
 	const getCellValue = (position: string, state: State): number => {
 		let returnValue: Cell;
@@ -62,10 +71,9 @@
 
 	const getCellCallback = (s: State): ((arg0: string) => number) => {
 		return (arg0: string): number => {
-			return getCellValue(arg0, s)
+			return getCellValue(arg0, s);
 		};
 	};
-
 </script>
 
 <table>
@@ -94,4 +102,20 @@
 	td {
 		padding: 0;
 	}
+
+ tr:nth-child(even) {
+  background-color: #CDE0E5;
+ }
+ th {
+	 background-color: #274472;
+	 color: white;
+	 min-width: 40px;
+ }
+
+ table, th, td {
+	 font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+		border: 1px solid lightgray;
+		border-collapse: collapse;
+	 margin: 0;
+ }
 </style>
