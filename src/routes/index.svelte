@@ -114,8 +114,8 @@
 
  table, th, td {
 	 font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-		border: 1px solid lightgray;
-		border-collapse: collapse;
+	 border: 1px solid lightslategray;
+	 border-collapse: collapse;
 	 margin: 0;
  }
 </style>

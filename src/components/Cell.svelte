@@ -5,13 +5,18 @@
  export let data: Cell;
  export let callback: (c: Cell) => void;
 
+ const setValue = (data: Cell) => {
+     data.state = 'idle'
+     callback(data)
+ }
+
 </script>
 
-<div class="cell">
-    {#if (data.state == 'edit')}
-        <input autofocus on:blur={callback(data)} bind:value={data.function}/>
-    {:else if (data.state == 'idle')}
-        <div class="value" on:dblclick="{() => data.state = CellState.Edit}">
+<div class="cell {data.state}" on:dblclick="{() => data.state = CellState.Edit}">
+    <div class="value">
+        {#if (data.state == 'edit')}
+            <input autofocus on:blur={setValue(data)} bind:value={data.function}/>
+        {:else if (data.state == 'idle')}
             <span>
                 {#if (data.value)}
                     {data.value}
@@ -19,32 +24,43 @@
                     {data.function}
                 {/if}
             </span>
-        </div>
-    {/if}
+        {/if}
+    </div>
 </div>
 
 <style>
+ /* .edit {
+    border-style: solid;
+    border-width: 1px;
+    border-color: blue;
+    } */
  .cell {
      /* border-style: solid;
         border-width: 1px; */
-     height: 1.5em;
      min-width: 5em;
      margin: 0;
      padding: 0;
+     width: 80px;
+     height: 1.5em;
+     display: table;
  }
  input {
-     max-width: 5em;
+	 font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+     max-width: 60px;
+     background: none;
+     border: none;
+     font-size: 1em;
+     padding-left: 0;
+     margin: 0;
+ }
+ input:focus {
+     outline: none;
  }
 
  .value {
-     width: 100%;
-     height: 100%;
-     display: table;
- }
-
- span {
      display: inline-block;
      vertical-align: middle;
-     margin: 2px;
+     padding-left: 0.2em;
  }
+
 </style>
