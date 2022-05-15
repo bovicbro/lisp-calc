@@ -4,19 +4,31 @@
 
  export let data: Cell;
  export let callback: (c: Cell) => void;
+ export let selectCell: (c: Cell) => void;
+ export let deselectCell: () => void;
 
  const setValue = (data: Cell) => {
-     data.state = 'idle'
+     data.state = CellState.Idle
      callback(data)
  }
 
-</script>
+ const handleCellClick = (): void => {
+     if (data.state == CellState.Idle)  {
+        data.state = CellState.Selected
+        selectCell(data)
+     } else {
+         deselectCell()
+         data.state = CellState.Edit
+     }
+ }
 
-<div class="cell {data.state}" on:dblclick="{() => data.state = CellState.Edit}">
+</script>
+{#if data}
+<div class="cell {data.state}" on:click={handleCellClick}>
     <div class="value">
         {#if (data.state == 'edit')}
-            <input autofocus on:blur={setValue(data)} bind:value={data.function}/>
-        {:else if (data.state == 'idle')}
+            <input autofocus on:blur="{ () => setValue(data)}" bind:value={data.function}/>
+        {:else }
             <span>
                 {#if (data.value)}
                     {data.value}
@@ -27,13 +39,14 @@
         {/if}
     </div>
 </div>
+{/if}
 
 <style>
- /* .edit {
-    border-style: solid;
-    border-width: 1px;
-    border-color: blue;
-    } */
+ .selected {
+     outline-style: solid;
+     outline-width: 2px;
+     outline-color: green;
+ }
  .cell {
      /* border-style: solid;
         border-width: 1px; */

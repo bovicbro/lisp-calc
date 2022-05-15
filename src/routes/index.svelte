@@ -1,25 +1,20 @@
 <script lang="ts">
-	import CellComponent from '../components/Cell.svelte';
-	import type { Cell } from '../components/Cell';
-	import { emptyCell, CellState } from '../components/Cell';
-	import { evaluateSource } from '$lib/interpreter/';
+ import CellComponent from '../components/Cell.svelte';
+ import Modal from '../components/Modal.svelte'
+ import type { Cell, Position, Row, Column} from '../components/Cell';
+ import { emptyCell, CellState } from '../components/Cell';
+ import { evaluateSource } from '$lib/interpreter/';
 
-	type Row = number;
-	type Column = string;
-
-	type Position = {
-		row: Row;
-		column: Column;
-	};
 
 	const newPosition = (row: Row, column: Column): Position => {
 		return { row: row, column: column };
 	};
 
 	type State = {
-		rows: Row[];
-		columns: Column[];
+		rows: number[];
+		columns: string[];
 		cells: Map<Position, Cell>;
+		selectedCell?: Cell;
 	};
 
 	//initiate state
@@ -29,10 +24,18 @@
 		cells: new Map()
 	};
 
+	const stringToPosition = (s: string): Position => {
+		const row = parseInt(/\d+/.exec(s)[0]) as Row;
+		const column = /([A-Z])+/.exec(s)[0] as Column;
+		return newPosition(row, column);
+	};
+
+ // Initiates cells
+ state.rows.forEach((row) => state.columns.forEach( (column) => state.cells.set({row,column},{...emptyCell, position: {row,column}})))
+
 	const updateCells = () => {
 		state.cells.forEach((cell, position) => {
 			updateCell(position, cell);
-			console.log(cell);
 		});
 		state = state;
 		console.log('updating all cells');
@@ -41,7 +44,7 @@
 	const updateCell = (position: Position, newState: Cell): void => {
 		newState.state = CellState.Idle;
 		newState = evaluate(newState);
-		state.cells.set(position, newState);
+		state.cells.set(position, {...newState});
 		state = state;
 	};
 
@@ -63,19 +66,38 @@
 		return returnValue.value;
 	};
 
-	const stringToPosition = (s: string): Position => {
-		const row = parseInt(/\d+/.exec(s)[0]) as Row;
-		const column = /([A-Z])+/.exec(s)[0] as Column;
-		return newPosition(row, column);
-	};
+ const getCellFromPosition = (position: Position, cells: Map<Position,Cell>) => {
+	 let cell: Cell;
+	 cells.forEach( (value, key) => {
+			if (key.row == position.row && key.column == position.column) {
+				cell = value;
+			}
+
+	 } )
+	 return cell
+ }
 
 	const getCellCallback = (s: State): ((arg0: string) => number) => {
 		return (arg0: string): number => {
 			return getCellValue(arg0, s);
 		};
 	};
+
+ const selectCell = (c: Cell): void => {
+	 if (state.selectedCell) {
+		 state.selectedCell.state = CellState.Idle
+	 }
+	 state.selectedCell = c
+ }
+
+ const deselectCell = (): void => {
+	 if (state.selectedCell)
+	 	state.selectedCell = null
+ }
+
 </script>
 
+<Modal/>
 <table>
 	<tr>
 		<th />
@@ -88,10 +110,14 @@
 			<th>{row}</th>
 			{#each state.columns as column}
 				<td>
+					{#if state}
 					<CellComponent
-						data={{ ...emptyCell }}
-						callback={(newState) => updateCell({ row, column }, newState)}
+						data = {getCellFromPosition({row,column},state.cells)}
+						callback={(newState) => {updateCell(newState.position, newState)}}
+						selectCell={selectCell}
+						deselectCell = {deselectCell}
 					/>
+					{/if}
 				</td>
 			{/each}
 		</tr>
