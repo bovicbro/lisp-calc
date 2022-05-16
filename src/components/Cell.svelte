@@ -44,8 +44,9 @@
 <style>
  .selected {
      outline-style: solid;
-     outline-width: 2px;
+     outline-width: 1px;
      outline-color: green;
+     box-shadow: 0px 0px 2px 2px green;
  }
  .cell {
      /* border-style: solid;

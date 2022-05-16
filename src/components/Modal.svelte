@@ -16,7 +16,7 @@ let show = true;
 <style type="text/css" media="screen">
  .backdrop {
      background-color: gray;
-     margin: 0;
+     margin: 0.2em;
  }
 
  .modal {
@@ -25,6 +25,12 @@ let show = true;
 
  p {
      margin: 0;
+ }
+
+ button {
+     background-color: #ff6e4a;
+     border-radius: 3px;
+     border-color: #ff6e4a;
  }
  
 </style>

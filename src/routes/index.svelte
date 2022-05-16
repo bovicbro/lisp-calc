@@ -35,16 +35,16 @@
 
 	const updateCells = () => {
 		state.cells.forEach((cell, position) => {
-			updateCell(position, cell);
+            if (cell && position)
+                updateCell(position, cell);
 		});
 		state = state;
-		console.log('updating all cells');
 	};
 
 	const updateCell = (position: Position, newState: Cell): void => {
 		newState.state = CellState.Idle;
 		newState = evaluate(newState);
-		state.cells.set(position, {...newState});
+		// state.cells.set(newState.position, {...newState});
 		state = state;
 	};
 
@@ -95,6 +95,10 @@
 	 	state.selectedCell = null
  }
 
+ const handleUpdate = (newState) => {
+     updateCell(newState.position, newState)
+     updateCells()
+ }
 </script>
 
 <Modal/>
@@ -113,7 +117,7 @@
 					{#if state}
 					<CellComponent
 						data = {getCellFromPosition({row,column},state.cells)}
-						callback={(newState) => {updateCell(newState.position, newState)}}
+						callback={(newState) => {handleUpdate(newState)}}
 						selectCell={selectCell}
 						deselectCell = {deselectCell}
 					/>
