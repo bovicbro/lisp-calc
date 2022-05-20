@@ -11,6 +11,10 @@ test('Interprete statements', () => {
     expect(evaluateSource("(+ 13 (+ 10 ( + 1 1 )))")).toBe(25)
 })
 
+test('Division', () => {
+    expect(evaluateSource('/ 10 2')).toBe(5)
+})
+
 test('Interprete statement that includes whitespace', () => {
     expect(evaluateSource('(       *       (      *     1  2     )    2  )')).toBe(4)
 })

@@ -15,6 +15,7 @@ export enum TokenType {
     // Single charachters
     PLUS = '+',
     MINUS = '-',
+    DIVSION = '/',
     MULTIPLY = '*',
     LEFT_PARAN = '(',
     RIGHT_PARAN = ')',
@@ -70,6 +71,8 @@ export const scanToken = (source: string, location: number, line: number): Token
             return newToken(TokenType.PLUS, '+', 0, line)
         case '-':
             return newToken(TokenType.MINUS, '-', 0, line)
+        case '/':
+            return newToken(TokenType.DIVSION, '/', 0, line)
         case '*':
             return newToken(TokenType.MULTIPLY, '*', 0, line)
         case '(':
@@ -165,6 +168,8 @@ export const evaluateAST = (expr: Expr, getCellValue?: (arg0: string) => number 
                 return evaluateAST(expr.left, getCellValue) + evaluateAST(expr.right, getCellValue)
             case (TokenType.MINUS):
                 return evaluateAST(expr.left, getCellValue) - evaluateAST(expr.right, getCellValue)
+            case (TokenType.DIVSION):
+                return evaluateAST(expr.left, getCellValue) / evaluateAST(expr.right, getCellValue)
             case (TokenType.MULTIPLY):
                 return evaluateAST(expr.left, getCellValue) * evaluateAST(expr.right, getCellValue)
         }
