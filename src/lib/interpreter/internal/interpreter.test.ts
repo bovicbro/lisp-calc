@@ -18,9 +18,6 @@ test('Division', () => {
 test('Interprete statement that includes whitespace', () => {
     expect(evaluateSource('(       *       (      *     1  2     )    2  )')).toBe(4)
 })
-test('Interprete statement with reference', () => {
-    expect(evaluateSource("(+ A1 1)")).toBe(1)
-})
 //
 // How big number should the program support?
 test('Interprete statement with big numbers', () => {

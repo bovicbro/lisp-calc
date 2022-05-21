@@ -51,17 +51,25 @@ export const newToken = (tokenType: TokenType, lexeme: string, value: number, li
  * ##########################################################
  */
 
-export const scanToken = (source: string, location: number, line: number): Token => {
+export const scanToken = (source: string, location: number, line: number): Token | Error => {
+    const indexScanStart = source[location]
+    if (indexScanStart === undefined)
+        return Error('Out of index')
 
     const numberRegExp = new RegExp(/^\d+/)
-    if (numberRegExp.test(source[location])) {
-        const value: number = parseInt(numberRegExp.exec(source.slice(location))[0]);
+    if (numberRegExp.test(indexScanStart)) {
+        //@ts-ignore
+        // All relevant variables have been tested, will not return null
+        const valueString: string = numberRegExp.exec(source.slice(location))[0]
+        const value: number = parseInt(valueString);
         return newToken(TokenType.NUMBER, value.toString(), value, line)
     }
 
 
     const cellRegExp = new RegExp(/^(([A-Z])+([0-9])+)/)
     if (cellRegExp.test(source.slice(location))) {
+        //@ts-ignore
+        // All relevant variables have been tested
         const lexeme: string = cellRegExp.exec(source.slice(location))[0]
         return newToken(TokenType.CELL_REFERENCE, lexeme, 0, line)
     }
@@ -88,7 +96,9 @@ export const scanTokens = (source: string): Token[] => {
     const line = 1;
 
     for (let current = 0; current < source.length; current++) {
-        const token: Token = scanToken(source, current, line)
+        const token = scanToken(source, current, line)
+        if (token instanceof Error)
+            throw token
         if (token.tokenType != TokenType.NULL) {
             tokens.push(token)
             current += token.lexeme.length - 1
@@ -110,7 +120,7 @@ export const isNumber = (expr: Expr): expr is Token => {
 
 export const findIndexEndOfExpression = (startIndex: number, stream: Token[]): number => {
 
-    if (stream[startIndex].tokenType !== TokenType.LEFT_PARAN) {
+    if (stream[startIndex]?.tokenType !== TokenType.LEFT_PARAN) {
         return startIndex;
     }
 
@@ -126,10 +136,12 @@ export const findIndexEndOfExpression = (startIndex: number, stream: Token[]): n
         if (numberClosing === numberOpening)
             index.push(i)
     })
-    return startIndex + index[0]
+    return startIndex + (index[0] ? index[0] : 0)
 }
 
 export const tokenStreamToAST = (stream: Token[]): Expr => {
+    if (!stream[0])
+        throw Error('')
     switch (stream[0].tokenType) {
         case (TokenType.NUMBER):
             return stream[0]
@@ -152,7 +164,7 @@ export const tokenStreamToAST = (stream: Token[]): Expr => {
  * ##########################################################
  */
 
-export const evaluateAST = (expr: Expr, getCellValue?: (arg0: string) => number | string, state?: object) => {
+export const evaluateAST = (expr: Expr, getCellValue?: (arg0: string) => number | string, state?: object): number => {
     if (isNumber(expr)) {
         switch (expr.tokenType) {
             case (TokenType.NUMBER):
@@ -160,7 +172,6 @@ export const evaluateAST = (expr: Expr, getCellValue?: (arg0: string) => number 
             case (TokenType.CELL_REFERENCE):
                 if (getCellValue)
                     return parseInt(getCellValue(expr.lexeme) as string)
-                return 0
         }
     } else {
         switch (expr.operator.tokenType) {
@@ -174,8 +185,9 @@ export const evaluateAST = (expr: Expr, getCellValue?: (arg0: string) => number 
                 return evaluateAST(expr.left, getCellValue) * evaluateAST(expr.right, getCellValue)
         }
     }
+    throw Error('Could not evaluate')
 }
 
-export const evaluateSource = (stream: string, callback?: (arg0: string) =>  number | string, state?: object): number => {
+export const evaluateSource = (stream: string, callback?: (arg0: string) => number | string, state?: object): number => {
     return evaluateAST(tokenStreamToAST(scanTokens(stream)), callback, state);
 }

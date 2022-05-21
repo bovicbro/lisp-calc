@@ -5,7 +5,6 @@
  import { emptyCell, CellState } from '../components/Cell';
  import { evaluateSource } from '$lib/interpreter/';
 
-
 	const newPosition = (row: Row, column: Column): Position => {
 		return { row: row, column: column };
 	};
