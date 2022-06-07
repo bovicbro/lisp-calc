@@ -111,6 +111,7 @@
 			state.selectedCell.state = CellState.Idle;
 		}
 		state.selectedCell = c;
+		state.selectedCell.state = CellState.Selected;
 	};
 
 	const deselectCell = (): void => {
@@ -129,17 +130,68 @@
 		};
 	};
 
+ const incrementLetterIndex = (s: string): string => {
+	 const lastChar = s.substring(s.length -1)
+	 const newLastChar = String.fromCharCode(lastChar.charCodeAt(0) + 1)
+
+	 if (lastChar  == 'Z')
+	 	return s.concat('A')
+
+	 return s.substring(0, s.length-1).concat(newLastChar)
+ }
+
+ const decrementLetterIndex = (s: string): string => {
+	 const lastChar = s.substring(s.length -1)
+	 const newLastChar = String.fromCharCode(lastChar.charCodeAt(0) - 1)
+
+	 if (lastChar  == 'A')
+	 	return s.substring(0,s.length-1)
+
+	 return s.substring(0, s.length-1).concat(newLastChar)
+ }
+
+	const navigateCells = (s: State, keystroke: string): Cell => {
+		if (!s.selectedCell) return state.selectedCell;
+		let newRow: Row = s.selectedCell.position.row;
+		let newCol: Column = s.selectedCell.position.column;
+		switch (keystroke) {
+			case 'ArrowUp':
+				newRow--;
+				break;
+			case 'ArrowDown':
+				newRow++;
+				break;
+			case 'ArrowLeft':
+				newCol = decrementLetterIndex(newCol)
+				break;
+			case 'ArrowRight':
+				newCol = incrementLetterIndex(newCol)
+				break;
+		}
+		const nextSelectedCellPosition = newPosition(newRow, newCol);
+		const nextSelectedCell = getCellFromPosition(nextSelectedCellPosition, state.cells);
+		return nextSelectedCell;
+	};
+
 	const handleKeydown = (e) => {
 		const key = e.key;
 		console.log(key);
 		switch (key) {
 			case 'ArrowUp':
+				e.preventDefault()
+				selectCell(navigateCells(state,'ArrowUp'))
 				break;
 			case 'ArrowLeft':
+				e.preventDefault()
+				selectCell(navigateCells(state,'ArrowLeft'))
 				break;
 			case 'ArrowRight':
+				e.preventDefault()
+				selectCell(navigateCells(state,'ArrowRight'))
 				break;
 			case 'ArrowDown':
+				e.preventDefault()
+				selectCell(navigateCells(state,'ArrowDown'))
 				break;
 			case 'F2':
 				if (state.selectedCell) state.selectedCell.state = CellState.Edit;
@@ -147,10 +199,12 @@
 			case 'Delete':
 				if (state.selectedCell) {
 					state.selectedCell.function = '';
+					state = state;
 				}
 				break;
 			case 'Enter':
-				handleUpdate(state.editedCell)
+				handleUpdate(state.editedCell);
+				break;
 		}
 	};
 </script>
