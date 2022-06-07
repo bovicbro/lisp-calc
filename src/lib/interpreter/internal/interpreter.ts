@@ -164,14 +164,14 @@ export const tokenStreamToAST = (stream: Token[]): Expr => {
  * ##########################################################
  */
 
-export const evaluateAST = (expr: Expr, getCellValue?: (arg0: string) => number | string, state?: object): number => {
+export const evaluateAST = (expr: Expr, getCellValue?: (arg0: string) => any , state?: object): number => {
     if (isNumber(expr)) {
         switch (expr.tokenType) {
             case (TokenType.NUMBER):
                 return expr.value
             case (TokenType.CELL_REFERENCE):
                 if (getCellValue)
-                    return parseInt(getCellValue(expr.lexeme) as string)
+                    return parseInt(getCellValue(expr.lexeme).value as string)
         }
     } else {
         switch (expr.operator.tokenType) {
@@ -188,6 +188,6 @@ export const evaluateAST = (expr: Expr, getCellValue?: (arg0: string) => number 
     throw Error('Could not evaluate')
 }
 
-export const evaluateSource = (stream: string, callback?: (arg0: string) => number | string, state?: object): number => {
+export const evaluateSource = (stream: string, callback?: (arg0: string) => object, state?: object): number => {
     return evaluateAST(tokenStreamToAST(scanTokens(stream)), callback, state);
 }

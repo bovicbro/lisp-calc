@@ -1,9 +1,9 @@
 <script lang="ts">
- import CellComponent from '../components/Cell.svelte';
- import Modal from '../components/Modal.svelte'
- import type { Cell, Position, Row, Column} from '../components/Cell';
- import { emptyCell, CellState } from '../components/Cell';
- import { evaluateSource } from '$lib/interpreter/';
+	import CellComponent from '../components/Cell.svelte';
+	import Modal from '../components/Modal.svelte';
+	import type { Cell, Position, Row, Column } from '../components/Cell';
+	import { emptyCell, CellState } from '../components/Cell';
+	import { evaluateSource } from '$lib/interpreter/';
 
 	const newPosition = (row: Row, column: Column): Position => {
 		return { row: row, column: column };
@@ -14,12 +14,36 @@
 		columns: string[];
 		cells: Map<Position, Cell>;
 		selectedCell?: Cell;
+		editedCell?: Cell;
 	};
 
 	//initiate state
 	let state: State = {
-		rows: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26],
-		columns: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O','P','Q','R','S','T'],
+		rows: [
+			1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26
+		],
+		columns: [
+			'A',
+			'B',
+			'C',
+			'D',
+			'E',
+			'F',
+			'G',
+			'H',
+			'I',
+			'J',
+			'K',
+			'L',
+			'M',
+			'N',
+			'O',
+			'P',
+			'Q',
+			'R',
+			'S',
+			'T'
+		],
 		cells: new Map()
 	};
 
@@ -29,32 +53,33 @@
 		return newPosition(row, column);
 	};
 
- // Initiates cells
- state.rows.forEach((row) => state.columns.forEach( (column) => state.cells.set({row,column},{...emptyCell, position: {row,column}})))
+	// Initiates cells
+	state.rows.forEach((row) =>
+		state.columns.forEach((column) =>
+			state.cells.set({ row, column }, { ...emptyCell, position: { row, column } })
+		)
+	);
 
 	const updateCells = () => {
 		state.cells.forEach((cell, position) => {
-            if (cell && position)
-                updateCell(position, cell);
+			if (cell && position) updateCell(cell);
 		});
 		state = state;
 	};
 
-	const updateCell = (position: Position, newState: Cell): void => {
+	const updateCell = (newState: Cell): void => {
 		newState.state = CellState.Idle;
 		newState = evaluate(newState);
-		// state.cells.set(newState.position, {...newState});
-		state = state;
 	};
 
 	const evaluate = (c: Cell): Cell => {
 		if (typeof c.function == 'undefined') return emptyCell;
 		if (c.function[0] == '=') c.value = evaluateSource(c.function.slice(1), getCellCallback(state));
-		else c.value = c.function;
+		else c.value = parseInt(c.function);
 		return c;
 	};
 
-	const getCellValue = (position: string, state: State): number => {
+	const getCell = (position: string, state: State): Cell => {
 		let returnValue: Cell;
 		const p: Position = stringToPosition(position);
 		state.cells.forEach((value, key) => {
@@ -62,45 +87,76 @@
 				returnValue = value;
 			}
 		});
-		return returnValue.value;
+		return returnValue;
 	};
 
- const getCellFromPosition = (position: Position, cells: Map<Position,Cell>) => {
-	 let cell: Cell;
-	 cells.forEach( (value, key) => {
+	const getCellFromPosition = (position: Position, cells: Map<Position, Cell>) => {
+		let cell: Cell;
+		cells.forEach((value, key) => {
 			if (key.row == position.row && key.column == position.column) {
 				cell = value;
 			}
+		});
+		return cell;
+	};
 
-	 } )
-	 return cell
- }
-
-	const getCellCallback = (s: State): ((arg0: string) => number) => {
-		return (arg0: string): number => {
-			return getCellValue(arg0, s);
+	const getCellCallback = (s: State): ((arg0: string) => Cell) => {
+		return (arg0: string): Cell => {
+			return getCell(arg0, s);
 		};
 	};
 
- const selectCell = (c: Cell): void => {
-	 if (state.selectedCell) {
-		 state.selectedCell.state = CellState.Idle
-	 }
-	 state.selectedCell = c
- }
+	const selectCell = (c: Cell): void => {
+		if (state.selectedCell) {
+			state.selectedCell.state = CellState.Idle;
+		}
+		state.selectedCell = c;
+	};
 
- const deselectCell = (): void => {
-	 if (state.selectedCell)
-	 	state.selectedCell = null
- }
+	const deselectCell = (): void => {
+		if (state.selectedCell) state.selectedCell = null;
+	};
 
- const handleUpdate = (newState) => {
-     updateCell(newState.position, newState)
-     updateCells()
- }
+	const handleUpdate = (newState: Cell) => {
+		updateCell(newState);
+		updateCells();
+		state.editedCell = null;
+	};
+
+	const editCell = (state: State): ((c: Cell) => void) => {
+		return (c: Cell): void => {
+			state.editedCell = c;
+		};
+	};
+
+	const handleKeydown = (e) => {
+		const key = e.key;
+		console.log(key);
+		switch (key) {
+			case 'ArrowUp':
+				break;
+			case 'ArrowLeft':
+				break;
+			case 'ArrowRight':
+				break;
+			case 'ArrowDown':
+				break;
+			case 'F2':
+				if (state.selectedCell) state.selectedCell.state = CellState.Edit;
+				break;
+			case 'Delete':
+				if (state.selectedCell) {
+					state.selectedCell.function = '';
+				}
+				break;
+			case 'Enter':
+				handleUpdate(state.editedCell)
+		}
+	};
 </script>
 
-<Modal/>
+<svelte:window on:keydown={handleKeydown} />
+<Modal />
 <table>
 	<tr>
 		<th />
@@ -114,12 +170,15 @@
 			{#each state.columns as column}
 				<td>
 					{#if state}
-					<CellComponent
-						data = {getCellFromPosition({row,column},state.cells)}
-						callback={(newState) => {handleUpdate(newState)}}
-						selectCell={selectCell}
-						deselectCell = {deselectCell}
-					/>
+						<CellComponent
+							data={getCellFromPosition({ row, column }, state.cells)}
+							callback={(newState) => {
+								handleUpdate(newState);
+							}}
+							{selectCell}
+							{deselectCell}
+							editCell={editCell(state)}
+						/>
 					{/if}
 				</td>
 			{/each}
@@ -132,19 +191,22 @@
 		padding: 0;
 	}
 
- tr:nth-child(even) {
-  background-color: #CDE0E5;
- }
- th {
-	 background-color: #274472;
-	 color: white;
-	 min-width: 40px;
- }
+	tr:nth-child(even) {
+		background-color: #cde0e5;
+	}
+	th {
+		background-color: #274472;
+		color: white;
+		min-width: 40px;
+	}
 
- table, th, td {
-	 font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-	 border: 1px solid lightslategray;
-	 border-collapse: collapse;
-	 margin: 0;
- }
+	table,
+	th,
+	td {
+		font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode',
+			Geneva, Verdana, sans-serif;
+		border: 1px solid lightslategray;
+		border-collapse: collapse;
+		margin: 0;
+	}
 </style>

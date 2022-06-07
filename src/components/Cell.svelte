@@ -6,6 +6,7 @@
  export let callback: (c: Cell) => void;
  export let selectCell: (c: Cell) => void;
  export let deselectCell: () => void;
+ export let editCell: (c: Cell) => void;
 
  const setValue = (data: Cell) => {
      data.state = CellState.Idle
@@ -18,6 +19,7 @@
         selectCell(data)
      } else {
          deselectCell()
+         editCell(data)
          data.state = CellState.Edit
      }
  }
