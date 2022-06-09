@@ -2,16 +2,16 @@
 Lisp calc is a free and open source spreadsheet calculation program. It uses Lisp like syntax.
 
 ## Features
-💡 Planned
-👨‍💻 In progress
-✅ Done
+💡 Planned /n
+👨‍💻 In progress /n
+✅ Done /n
 
-✅ Basic calculations possible
-✅ Reference other cells
-✅ Recalulate other cells when updated referenced cells
-👨‍💻 Keyboard navigation, navcluster for moving cell, f2 to edit, Enter to close, Delete to delete
-💡 Reactive recalculation of cells
-💡 More functions, Sum, avrage and so on
+✅ Basic calculations possible /n
+✅ Reference other cells /n
+✅ Recalulate other cells when updated referenced cells /n
+👨‍💻 Keyboard navigation, navcluster for moving cell, f2 to edit, Enter to close, Delete to delete /n
+💡 Reactive recalculation of cells /n
+💡 More functions, Sum, avrage and so on /n
 
 ## Developing
 
