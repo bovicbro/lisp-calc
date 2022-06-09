@@ -68,8 +68,8 @@
 	};
 
 	const updateCell = (newState: Cell): void => {
-		newState.state = CellState.Idle;
 		newState = evaluate(newState);
+		newState.state = CellState.Idle;
 	};
 
 	const evaluate = (c: Cell): Cell => {
@@ -126,6 +126,7 @@
 
 	const editCell = (state: State): ((c: Cell) => void) => {
 		return (c: Cell): void => {
+			c.state = CellState.Edit
 			state.editedCell = c;
 		};
 	};
@@ -203,7 +204,15 @@
 				}
 				break;
 			case 'Enter':
-				handleUpdate(state.editedCell);
+				if (state.editedCell) {
+					const editedCell = state.editedCell
+					handleUpdate(state.editedCell)
+					state = state
+					selectCell(editedCell)
+					selectCell(navigateCells(state,'ArrowDown'))
+				} else {
+					selectCell(navigateCells(state,'ArrowDown'))
+				}
 				break;
 		}
 	};

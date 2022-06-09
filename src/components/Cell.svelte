@@ -9,18 +9,15 @@
  export let editCell: (c: Cell) => void;
 
  const setValue = (data: Cell) => {
-     data.state = CellState.Idle
      callback(data)
  }
 
  const handleCellClick = (): void => {
      if (data.state == CellState.Idle)  {
-        data.state = CellState.Selected
         selectCell(data)
      } else {
          deselectCell()
          editCell(data)
-         data.state = CellState.Edit
      }
  }
 
